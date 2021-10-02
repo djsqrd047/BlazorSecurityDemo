@@ -1,0 +1,53 @@
+﻿@using BlazorSecurityDemo.Shared
+@using System.Text.Json
+@inject HttpClient Http
+@inject IHttpClientFactory HttpClientFactory
+
+@page "/counter"
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+<AuthorizeView>
+    <Authorized>
+        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private int currentCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var http = HttpClientFactory.CreateClient("BlazorSecurityDemo.AnonymousAPI");
+        var currentCountData = await http.GetFromJsonAsync<IEnumerable<CurrentCount>>("Counter");
+        if (currentCountData.Any())
+        {
+            currentCount = currentCountData.FirstOrDefault().CurrentValue;
+        }
+    }
+
+    private async void IncrementCount()
+    {
+        var http = HttpClientFactory.CreateClient("BlazorSecurityDemo.AnonymousAPI");
+        var currentCountData = await http.GetFromJsonAsync<IEnumerable<CurrentCount>>("Counter");
+        if (currentCountData.Any())
+        {
+            var response = await Http.PostAsJsonAsync<int>("Counter", currentCountData.FirstOrDefault().Id);
+            if (response.IsSuccessStatusCode)
+            {
+                currentCountData = JsonSerializer.Deserialize<IEnumerable<CurrentCount>>(response.Content.ReadAsStringAsync().Result,
+                new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    });
+                if (currentCountData.Any())
+                {
+                    currentCount = currentCountData.FirstOrDefault().CurrentValue;
+                }
+            }
+        }
+    }
+}
