@@ -28,7 +28,14 @@ builder.Services.AddIdentityServer()
     .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
 builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
+    .AddIdentityServerJwt()
+    .AddCookie(opts =>
+    {
+        opts.Cookie.HttpOnly = true;
+        opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        opts.Cookie.SameSite = SameSiteMode.Strict;
+        opts.Cookie.MaxAge = TimeSpan.FromDays(1);
+    });
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

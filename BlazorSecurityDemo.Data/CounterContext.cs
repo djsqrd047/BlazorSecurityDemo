@@ -27,8 +27,8 @@ namespace BlazorSecurityDemo.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS01;Database=TotallyNotSmartPayDB;Trusted_Connection=True;");
-            optionsBuilder.UseSqlServer("Server=localhost;Database=BlazorSecurityDemo;Trusted_Connection=True;");//work
+            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS03;Database=BlazorSecurityDemo;Trusted_Connection=True;");
+            //optionsBuilder.UseSqlServer("Server=localhost;Database=BlazorSecurityDemo;Trusted_Connection=True;");/
             base.OnConfiguring(optionsBuilder);
         }
     }
